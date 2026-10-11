@@ -1,3 +1,19 @@
+## Status
+
+**Compila e empacota.** Verificado nesta máquina (JDK 21 / Temurin):
+
+```
+.\gradlew.bat compileJava     # exit 0 — 191 .class gerados
+.\gradlew.bat shadowJar       # exit 0 — build/libs/AntiXray-2.0.0.jar (909 KB)
+```
+
+**WIP.** O plugin compila, mas está em desenvolvimento: os detectores ainda precisam de
+ajuste de taxa de falso positivo em servidor real, e não há suíte de testes automatizados
+(o projeto tem 0 arquivos de teste). Não use em produção sem revisar os thresholds de risco.
+
+*Medido em 11/10/2026. Repositório publicado a partir do código local.*
+
+---
 # AntiXray v3
 
 Advanced modular anti-xray detection system for Paper 1.21.4+.
