@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '9.0.0-beta4'
+}
+
+group 'com.antixray'
+version '2.0.0'
+
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc-repo'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'codemc-repo'
+        url = 'https://repo.codemc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'dmulloy2-repo'
+        url = 'https://repo.dmulloy2.net/repository/public/'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
+    implementation 'com.zaxxer:HikariCP:6.0.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    // slf4j-simple NÃO deve ser incluído — conflita com o logger do Paper.
+    // O Paper já fornece a implementação SLF4J via log4j-slf4j-impl.
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+shadowJar {
+    relocate 'com.zaxxer.hikari', 'com.antixray.libs.hikari'
+    relocate 'com.google.gson', 'com.antixray.libs.gson'
+    archiveBaseName.set('AntiXray')
+    archiveClassifier.set('')
+}
+
+build {
+    dependsOn shadowJar
+}
+
+artifacts {
+    archives shadowJar
+}

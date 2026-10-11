@@ -1,0 +1,173 @@
+# AntiXray v3 — Example Configuration
+# Copy this file to plugins/AntiXray/config.yml and customize
+
+database:
+  type: sqlite
+  host: plugins/AntiXray/data.db
+  port: 3306
+  name: antixray
+  user: root
+  password: ""
+  pool-size: 10
+  max-lifetime: 1800000
+  connection-timeout: 5000
+
+discord:
+  webhook-url: ""
+  rate-limit-ms: 5000
+  severity-colors:
+    alert: 16776960
+    flag: 16753920
+    punish: 16711680
+  role-pings:
+    alert: ""
+    flag: ""
+    punish: ""
+  compact-mode: false
+
+thresholds:
+  alert: 40
+  flag: 60
+  punish: 80
+  decay-interval: 300
+  decay-amount: 5
+  cooldown-window: 30
+
+weights:
+  detector: 1.0
+  evidence: 1.5
+  historical: 1.2
+  meta: 2.0
+
+detectors:
+  tunnel:
+    enabled: true
+    weight: 12
+    threshold: 50
+    punishment: [log, warn]
+    cooldown: 30
+    confidence-threshold: 30
+  branch-mining:
+    enabled: true
+    weight: 10
+    threshold: 45
+    punishment: [log]
+    cooldown: 60
+    confidence-threshold: 35
+  hidden-ore:
+    enabled: true
+    weight: 15
+    threshold: 60
+    punishment: [log, warn, evidence]
+    cooldown: 30
+    confidence-threshold: 40
+  rotation:
+    enabled: true
+    weight: 8
+    threshold: 40
+    punishment: [log]
+    cooldown: 15
+    confidence-threshold: 25
+  ore-ratio:
+    enabled: true
+    weight: 14
+    threshold: 55
+    punishment: [log, warn]
+    cooldown: 60
+    confidence-threshold: 35
+  rare-ore:
+    enabled: true
+    weight: 13
+    threshold: 50
+    punishment: [log, warn, evidence]
+    cooldown: 60
+    confidence-threshold: 40
+  luck:
+    enabled: true
+    weight: 18
+    threshold: 70
+    punishment: [log, warn, evidence, discord]
+    cooldown: 120
+    confidence-threshold: 50
+  wall-tracking:
+    enabled: true
+    weight: 16
+    threshold: 55
+    punishment: [log, warn]
+    cooldown: 60
+    confidence-threshold: 35
+  pathfinding:
+    enabled: true
+    weight: 20
+    threshold: 75
+    punishment: [log, evidence, discord]
+    cooldown: 120
+    confidence-threshold: 55
+  cluster:
+    enabled: true
+    weight: 14
+    threshold: 60
+    punishment: [log, warn]
+    cooldown: 90
+    confidence-threshold: 40
+  exploration:
+    enabled: true
+    weight: 12
+    threshold: 50
+    punishment: [log]
+    cooldown: 90
+    confidence-threshold: 35
+  staircase:
+    enabled: true
+    weight: 10
+    threshold: 45
+    punishment: [log, warn]
+    cooldown: 60
+    confidence-threshold: 30
+
+punishment:
+  stages:
+    - action: log
+      min-score: 40
+    - action: evidence
+      min-score: 60
+    - action: monitor
+      min-score: 70
+    - action: notify
+      min-score: 75
+    - action: discord
+      min-score: 80
+    - action: freeze
+      min-score: 85
+      duration: 30
+    - action: command
+      min-score: 90
+      command: "tempban {player} 7d X-Ray"
+    - action: ban
+      min-score: 95
+
+learning:
+  enabled: true
+  ema-alpha: 0.15
+  min-samples: 50
+  window-hours: 24
+  confidence-bands:
+    discard: 10
+    stats-only: 25
+    temporary: 50
+    permanent: 75
+
+historical-learning:
+  enabled: true
+  update-interval: 600
+  retention-days: 90
+  min-flags: 5
+
+obfuscation:
+  enabled: true
+  max-blocks-per-tick: 1000
+  use-decoy-system: true
+  decoy:
+    spawn-range: 5
+    ttl-seconds: 30
+    max-per-player: 10

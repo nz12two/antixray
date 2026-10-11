@@ -1,0 +1,60 @@
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+build/
+bin/
+
+# Wiki
+wiki/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Cache
+*.class
+
+# Script
+*.py
+
+# Changes Log
+Updates.md
+
+# Eclipse
+.classpath
+.project
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# --- node ---
+node_modules/
+
+# --- secrets ---
+.env
+.env.*
+!.env.example
+*credentials*.txt
+*creds*.txt
+tokens.txt
+
+# --- build/cache ---
+.gradle/
+build/
+dist/
+target/
+*.log
+
+# --- editor / SO ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,596 @@
+# AntiXray - Advanced X-Ray Detection Configuration
+# A modular, multi-detector anti-xray system with weighted risk scoring.
+
+# Database Configuration
+database:
+  type: sqlite  # Available: sqlite, mysql, mariadb, postgresql
+  host: plugins/AntiXray/data.db  # For SQLite: file path; For others: hostname
+  port: 3306    # MySQL/MariaDB default: 3306, PostgreSQL default: 5432
+  user: root
+  password: ''
+  database: antixray
+  pool-size: 10
+  timeout: 30000
+  use-ssl: false
+
+# Discord Webhook Integration
+discord:
+  enabled: false
+  webhook-url: ''
+  risk-threshold: 50.0   # Minimum risk score to send notification
+  embed-color: 16737331   # Decimal color code (0xFF5733 = 16737331)
+  notify-flags-only: true
+
+# Risk Score Thresholds
+thresholds:
+  alert: 55.0     # Risk score for staff alert
+  flag: 75.0      # Risk score for flagging as suspicious
+  punish: 92.0    # Risk score for automatic punishment
+
+# Risk Score Decay
+decay:
+  amount: 1.0         # Linear decay amount per cycle
+  interval-minutes: 2 # Decay cycle interval
+  use-factor: true    # Use multiplicative decay instead of linear
+  factor: 0.85        # Multiplicative decay factor
+
+# Detection Settings
+detection-worlds: []  # Empty = all worlds; Specify worlds to restrict detection
+max-path-length: 500
+trace-remove-minutes: 15
+
+# Rare Ores - Must match Material enum names
+rare-ores:
+  - DIAMOND_ORE
+  - DEEPSLATE_DIAMOND_ORE
+  - EMERALD_ORE
+  - DEEPSLATE_EMERALD_ORE
+  - ANCIENT_DEBRIS
+
+# Performance Tuning
+performance:
+  max-events-per-player: 1000
+  obfuscation-cache-size: 500    # Máximo de chunks em cache (LRU)
+  raytrace-cooldown-ms: 500      # Cooldown entre ray traces por jogador
+  occlusion-samples: 5           # Amostras de ray trace para fator de oclusão
+  adaptive-scheduling: true      # Reduz frequência de tasks quando TPS está baixo
+  tps-threshold-warn: 18.0       # Abaixo disso: reduz frequência
+  tps-threshold-critical: 16.0   # Abaixo disso: reduz drasticamente
+  siem-buffer-size: 50           # Linhas no buffer antes de flush
+  siem-flush-interval-ms: 5000   # Flush automático a cada N ms
+
+# Detector Configuration
+# Each detector can be independently enabled/disabled with configurable weights.
+# weight:     Importance in the final risk calculation (0-100)
+# threshold:  Minimum score to consider a detection significant (0-100)
+# punishment: List of actions when threshold is exceeded
+#   Available: log, warn, kick, ban, freeze, cmd:<command>
+# cooldown:   Seconds between checks for the same player/detector
+# confidence-threshold: Minimum confidence level to consider detection valid
+detectors:
+  luck:
+    enabled: true
+    weight: 15
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  tunnel:
+    enabled: true
+    weight: 12
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  branchmining:
+    enabled: true
+    weight: 10
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  walltracking:
+    enabled: true
+    weight: 14
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  hiddenore:
+    enabled: true
+    weight: 13
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  pathfinding:
+    enabled: true
+    weight: 10
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  rotation:
+    enabled: true
+    weight: 5
+    threshold: 50
+    punishment: []
+    cooldown: 15
+    debug: false
+    confidence-threshold: 20
+  behavior:
+    enabled: true
+    weight: 8
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  oreratio:
+    enabled: true
+    weight: 10
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 40
+  miningefficiency:
+    enabled: true
+    weight: 8
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 40
+  caveexploration:
+    enabled: true
+    weight: 7
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  direction:
+    enabled: true
+    weight: 11
+    threshold: 50
+    punishment: []
+    cooldown: 30
+    debug: false
+    confidence-threshold: 30
+  rareore:
+    enabled: true
+    weight: 12
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 40
+  sessionpattern:
+    enabled: true
+    weight: 9
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 35
+  historicalbehavior:
+    enabled: true
+    weight: 15
+    threshold: 30
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 20
+  cluster:
+    enabled: true
+    weight: 8
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 35
+  suspiciousturn:
+    enabled: true
+    weight: 5
+    threshold: 50
+    punishment: []
+    cooldown: 15
+    debug: false
+    confidence-threshold: 20
+  movement:
+    enabled: true
+    weight: 6
+    threshold: 50
+    punishment: []
+    cooldown: 15
+    debug: false
+    confidence-threshold: 25
+  exploration:
+    enabled: true
+    weight: 10
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 35
+
+  # Meta-Detectors (combiners)
+  oretargeting:
+    enabled: true
+    weight: 18
+    threshold: 45
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 35
+  systematicmining:
+    enabled: true
+    weight: 16
+    threshold: 50
+    punishment: []
+    cooldown: 60
+    debug: false
+    confidence-threshold: 35
+
+# Player Profile
+player-profile:
+  enabled: true
+  trust-decay-per-flag: 0.15
+  skill-factor: 0.10
+  playtime-hours-cap: 100
+
+# Engine System
+engines:
+  statistical:
+    enabled: true
+    z-score-threshold: 1.5
+  behavioral:
+    enabled: true
+    entropy-threshold: 0.3
+  spatial:
+    enabled: true
+    ore-space-threshold: 0.3
+
+# Scoring formula
+scoring:
+  mode: probabilistic
+
+# Confidence entropy
+confidence:
+  enabled: true
+  entropy-window: 10
+  entropy-threshold: 0.5
+
+# Concept Drift
+drift:
+  enabled: true
+  window-size: 50
+  threshold: 2.0
+
+# Temporal Risk Engine - combines current + previous + historical risk with decay
+# Prevents single spikes from triggering false punishments
+temporal-risk:
+  enabled: true
+  current-weight: 0.40    # Weight of current detection batch (0-1)
+  previous-weight: 0.30   # Weight of previous risk score (0-1)
+  historical-weight: 0.30 # Weight of long-term historical risk (0-1)
+  decay-factor: 0.85      # Multiplicative decay per cycle
+
+# Pipeline tiers - risk thresholds that gate detector execution
+pipeline:
+  fast-risk-cap: 80     # Max risk before stopping fast checks
+  medium-min-risk: 30   # Min risk to run medium checks
+  medium-risk-cap: 90   # Max risk before stopping medium checks
+  heavy-min-risk: 50    # Min risk to run heavy checks
+
+# Explanation module settings
+explanation:
+  enabled: true
+  log-to-console: true
+  show-positive-contributions: true  # Show cave exploration as positive (lowering risk)
+
+# Profiler settings
+profiler:
+  enabled: true
+  max-snapshots: 100
+  reset-on-reload: false
+  track-flags: true
+  track-false-positives: true
+
+# Detector State (accumulates suspicion over 30s windows)
+detector-state:
+  enabled: true
+  window-seconds: 30
+  max-accumulation: 100
+
+# Dynamic Weight (adjusts detector weight based on reliability)
+dynamic-weight:
+  enabled: true
+  min-effective: 0.1
+  reliability-alpha: 0.1
+
+# Auto Validation (warns if a detector flags too many players)
+auto-validation:
+  enabled: true
+  check-interval-ticks: 6000
+  warning-threshold: 0.90
+  min-players: 5
+
+# Feature Versioning
+feature-schema:
+  current-version: 2
+  compatible-versions: [1, 2]
+
+# Historical Learning - fingerprint-based player behavior analysis
+historical-learning:
+  enabled: true
+  cleanup-interval-ticks: 12000
+  min-events-for-fingerprint: 20
+
+  # Confidence Bands - controls what gets stored based on risk score
+  confidence-bands:
+    discard: { min: 0, max: 40,    accumulate: false, persist: false }
+    stats-only: { min: 40, max: 70, accumulate: true,  persist: false }
+    temporary: { min: 70, max: 90,  accumulate: true,  persist: true }
+    permanent: { min: 90, max: 100, accumulate: true,  persist: true }
+
+  # Temporal Persistence - sustained risk requirements
+  temporal:
+    temp-sustained-min: 70
+    temp-sustained-duration: 600000   # 10 minutes
+    perm-sustained-min: 90
+    perm-sustained-duration: 1200000  # 20 minutes
+    history-window-ms: 3600000        # 1 hour rolling window
+    sustain-ratio: 0.7                # 70% of samples must be above threshold
+
+  # Detector Consensus - minimum agreement and diversity
+  consensus:
+    min-detectors: 3
+    min-categories: 2
+    min-detector-score: 50
+
+  # Detector Reputation - per-detector consistency tracking
+  reputation:
+    reliable-threshold: 0.6
+    high-consistency-multiplier: 1.2
+    medium-consistency-multiplier: 1.0
+    low-consistency-multiplier: 0.7
+    poor-consistency-multiplier: 0.4
+
+  # Fingerprint Stability - cross-session consistency requirements
+  stability:
+    min-sessions: 3
+    stability-threshold: 0.8
+    min-session-duration-minutes: 3
+
+  # Three-Tier Storage
+  storage:
+    max-candidates: 15000
+    max-verified: 25000
+    max-reference: 300
+    candidate-ttl-days: 7
+    verified-ttl-days: 365
+    quarantine-confirmations: 3
+    quarantine-min-age-minutes: 60
+
+  # Mining Style Detection
+  styles:
+    enabled: true
+    cave-explorer-risk-reduction: 0.30
+    casual-risk-reduction: 0.40
+    optimized-risk-reduction: 0.15
+    branch-miner-risk-reduction: 0.10
+    style-match-threshold: 0.60
+
+  # Similarity Weights
+  similarity:
+    positive-weight: 40
+    negative-weight: 30
+
+# Progressive Punishment System
+# Each stage is independent and evaluated separately.
+# Conservative by design: if requirements are not met, the player is only monitored.
+punishments:
+  log:
+    enabled: true
+    min-risk: 0
+    min-confidence: 0
+    min-detectors: 1
+    min-categories: 1
+    min-meta-flags: 0
+    min-persistence-minutes: 0
+    min-sessions: 1
+    min-fingerprint-similarity: 0
+    cooldown-seconds: 300
+    message: ''
+    webhook: false
+
+  evidence:
+    enabled: true
+    min-risk: 30
+    min-confidence: 20
+    min-detectors: 2
+    min-categories: 1
+    min-meta-flags: 0
+    min-persistence-minutes: 2
+    min-sessions: 1
+    min-fingerprint-similarity: 0
+    cooldown-seconds: 600
+    message: ''
+    webhook: false
+
+  monitor:
+    enabled: true
+    min-risk: 50
+    min-confidence: 40
+    min-detectors: 2
+    min-categories: 1
+    min-meta-flags: 0
+    min-persistence-minutes: 5
+    min-sessions: 1
+    min-fingerprint-similarity: 0
+    cooldown-seconds: 600
+    message: ''
+    webhook: false
+
+  heavy:
+    enabled: true
+    min-risk: 70
+    min-confidence: 60
+    min-detectors: 3
+    min-categories: 2
+    min-meta-flags: 1
+    min-persistence-minutes: 10
+    min-sessions: 2
+    min-fingerprint-similarity: 0
+    cooldown-seconds: 900
+    message: ''
+    webhook: false
+
+  notify:
+    enabled: true
+    min-risk: 75
+    min-confidence: 70
+    min-detectors: 3
+    min-categories: 2
+    min-meta-flags: 1
+    min-persistence-minutes: 15
+    min-sessions: 2
+    min-fingerprint-similarity: 0.50
+    cooldown-seconds: 120
+    message: '§8[§cAntiXray§8] §e%player% §7flagged §c%risk%%§7 risk (conf=%confidence%%)'
+    webhook: false
+
+  discord:
+    enabled: true
+    min-risk: 55
+    min-confidence: 50
+    min-detectors: 2
+    min-categories: 1
+    min-meta-flags: 0
+    min-persistence-minutes: 5
+    min-sessions: 1
+    min-fingerprint-similarity: 0
+    cooldown-seconds: 300
+    message: ''
+    webhook: true
+
+  freeze:
+    enabled: false
+    min-risk: 95
+    min-confidence: 90
+    min-detectors: 4
+    min-categories: 3
+    min-meta-flags: 2
+    min-persistence-minutes: 30
+    min-sessions: 4
+    min-fingerprint-similarity: 0.85
+    cooldown-seconds: 3600
+    message: '§cYou have been frozen. Please wait for staff assistance.'
+    webhook: false
+
+  command:
+    enabled: false
+    min-risk: 95
+    min-confidence: 90
+    min-detectors: 4
+    min-categories: 3
+    min-meta-flags: 2
+    min-persistence-minutes: 30
+    min-sessions: 4
+    min-fingerprint-similarity: 0.85
+    cooldown-seconds: 3600
+    commands:
+      - 'warn %player% Suspicious mining activity detected (risk=%risk%%)'
+      - 'console:say %player% is being investigated for suspicious activity'
+    message: ''
+    webhook: false
+
+  kick:
+    enabled: false
+    min-risk: 92
+    min-confidence: 90
+    min-detectors: 4
+    min-categories: 3
+    min-meta-flags: 2
+    min-persistence-minutes: 30
+    min-sessions: 4
+    min-fingerprint-similarity: 0.85
+    cooldown-seconds: 3600
+    message: '§cDisconnected for suspicious activity. If you believe this is an error, contact staff.'
+    webhook: false
+
+  ban:
+    enabled: false
+    min-risk: 98
+    min-confidence: 95
+    min-detectors: 5
+    min-categories: 4
+    min-meta-flags: 3
+    min-persistence-minutes: 60
+    min-sessions: 5
+    min-fingerprint-similarity: 0.95
+    cooldown-seconds: 86400
+    message: '§cBanned for automated detection of x-ray usage.'
+    webhook: false
+
+# Obfuscation Engine - Block hiding via packet manipulation
+obfuscation:
+  enabled: true
+  engine-mode: hybrid  # Available: packet, raytrace, hybrid
+  hide-block-entities: true
+  reveal-radius: 24
+  max-updates-per-tick: 100
+  min-y: -64
+  max-y: 320
+  use-frustum-culling: true
+  frustum-fov: 90
+  update-interval-ticks: 20
+
+# Paranoia Mode - Fake decoy blocks to detect x-rayers
+paranoia:
+  enabled: true
+  decoy-radius: 8
+  decoy-count: 3
+  decoy-lifetime-seconds: 30
+  min-risk-for-decoys: 30
+  materials:
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - EMERALD_ORE
+    - ANCIENT_DEBRIS
+    - NETHERITE_SCRAP
+
+# Machine Learning Training
+ml:
+  enabled: true
+  dataset-dir: plugins/AntiXray/ml
+  models-dir: plugins/AntiXray/ml/models
+  default-trees: 100
+  default-depth: 20
+  min-samples-per-class: 10
+  train-async: true
+
+# SIEM Integration - JSONL log output for Wazuh, ELK, Splunk
+siem:
+  enabled: true
+  log-dir: plugins/AntiXray/logs
+  log-file: antixray-siem.jsonl
+  max-file-size-mb: 50
+  log-events:
+    flags: true
+    detections: true
+    punishments: true
+    risk-updates: false
+
+# Folia Compatibility
+folia:
+  enabled: true
+  use-global-region-scheduler: true
